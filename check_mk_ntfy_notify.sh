@@ -23,12 +23,12 @@ else
 fi
 
 # username
-if [ -z ${NOTIFY_PARAMETER_3} ]; then
+if [ -n ${NOTIFY_PARAMETER_3} ]; then
         SERVER_USER=${NOTIFY_PARAMETER_3}
 fi
 
 # password
-if [ -z ${NOTIFY_PARAMETER_4} ]; then
+if [ -n ${NOTIFY_PARAMETER_4} ]; then
         SERVER_PASSWORD=${NOTIFY_PARAMETER_4}
 fi
 
@@ -83,10 +83,11 @@ IPv4: ${NOTIFY_HOST_ADDRESS_4}
 IPv6: ${NOTIFY_HOST_ADDRESS_6}
 Alert found on site '${OMD_SITE}' at ${NOTIFY_SHORTDATETIME}"
 
-if [[ -z ${SERVER_USER} && ${SERVER_USER} != "" && -z ${SERVER_PASSWORD} && ${SERVER_PASSWORD} != "" ]]; then
-        curl -s -X POST "${SERVER_HOST}/${TOPIC}" -H "Title: ${NOTIFY_WHAT} ${SERVICE_TYPE} ${STATE}" -H "Priority: high" -H "Tags: ${EMOJI}" -u ${SERVER_USER}:${SERVER_PASSWORD} -d "${MESSAGE}"
-else
+
+if [[ -z ${SERVER_USER} && -z ${SERVER_PASSWORD} ]]; then
         curl -s -X POST "${SERVER_HOST}/${TOPIC}" -H "Title: ${NOTIFY_WHAT} ${SERVICE_TYPE} ${STATE}" -H "Priority: high" -H "Tags: ${EMOJI}" -d "${MESSAGE}"
+else
+        curl -s -X POST "${SERVER_HOST}/${TOPIC}" -u ${SERVER_USER}:${SERVER_PASSWORD} -H "Title: ${NOTIFY_WHAT} ${SERVICE_TYPE} ${STATE}" -H "Priority: high" -H "Tags: ${EMOJI}" -d "${MESSAGE}"
 fi
 
 if [ $? -ne 0 ]; then
